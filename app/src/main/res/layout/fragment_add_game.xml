@@ -11,22 +11,93 @@
             android:id="@+id/edit_text_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
-            android:inputType="text"/>
+            android:hint="@string/title"
+            android:inputType="text"
+            android:autofillHints="@string/title" tools:targetApi="o"/>
 
-    <EditText
-            android:id="@+id/edit_text_genre"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Genre"
-            android:inputType="text"/>
+            android:orientation="horizontal">
+        <TextView
+                android:id="@+id/edit_text_genre"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/genre"
+                android:ellipsize="end"
+        />
 
-    <EditText
-            android:id="@+id/edit_text_size"
+        <Button
+                android:id="@+id/button_genre_dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose"
+                android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Size in GB"
-            android:inputType="numberDecimal"/>
+            android:orientation="horizontal">
+
+        <ImageView
+                android:id="@+id/add_game_cover"
+                android:layout_width="136dp"
+                android:layout_height="182dp"
+                android:src="@drawable/no_cover"
+                android:contentDescription="@string/game_cover"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <EditText
+                    android:id="@+id/edit_text_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/size_in_gb"
+                    android:inputType="numberDecimal"
+                    android:autofillHints="size" tools:targetApi="o"/>
+
+            <EditText
+                    android:id="@+id/edit_text_rate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rate_in_percent"
+                    android:inputType="numberDecimal"
+                    android:autofillHints="percent" tools:targetApi="o"/>
+
+            <EditText
+                    android:id="@+id/edit_text_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/initial_release_date"
+                    android:inputType="date"
+                    android:autofillHints="date" tools:targetApi="o"/>
+
+            <EditText
+                    android:id="@+id/edit_text_disk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/disk_number"
+                    android:inputType="numberDecimal"
+                    android:autofillHints="number" tools:targetApi="o"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <EditText
+            android:id="@+id/edit_text_desc"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:hint="@string/description"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:autofillHints="description" tools:targetApi="o"/>
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -36,16 +107,16 @@
                 android:id="@+id/button_save_game"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="@string/save"
                 android:layout_weight="1"
-                />
+                tools:ignore="ButtonStyle"/>
         <Button
                 android:id="@+id/button_cancel_game"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 android:layout_weight="1"
-        />
+                tools:ignore="ButtonOrder,ButtonStyle"/>
     </LinearLayout>
 
 </LinearLayout>

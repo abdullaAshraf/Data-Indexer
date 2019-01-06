@@ -3,4 +3,46 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="choose">Choose</string>
+    <string name="genre">Genre</string>
+    <string name="title">Title</string>
+    <string name="game_cover">game cover</string>
+    <string name="size_in_gb">Size in GB</string>
+    <string name="rate_in_percent">Rate in Percent</string>
+    <string name="initial_release_date">Initial Release Date</string>
+    <string name="disk_number">Disk Number</string>
+    <string name="description">Description</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="dummy_size">46.5 GB</string>
+    <string name="dummy_disk">Disk: 2</string>
+    <string name="dummy_date">06/01/2019</string>
+    <string name="dummy_title">Assassin creed odyssey</string>
+    <string name="dummy_genre">Action role-playing</string>
+    <string name="dummy_desc">this is a very long description, hmm or maybe not that long!!</string>
+    <string name="dummy_ratio">45%</string>
+
+    <string-array name="genre_item">
+        <item>Adventure</item>
+        <item>Arcade</item>
+        <item>Fighting</item>
+        <item>Hack and slash/Beat \'em up</item>
+        <item>Indie</item>
+        <item>Music</item>
+        <item>Pinball</item>
+        <item>Platform</item>
+        <item>Point-and-click</item>
+        <item>Puzzle</item>
+        <item>Quiz/Trivia</item>
+        <item>Racing</item>
+        <item>Real Time Strategy (RTS)</item>
+        <item>Role-playing (RPG)</item>
+        <item>Shooter</item>
+        <item>Simulator</item>
+        <item>Sport</item>
+        <item>Strategy</item>
+        <item>Tactical</item>
+        <item>Turn-based strategy (TBS)</item>
+        <item>Other</item>
+    </string-array>
 </resources>
