@@ -21,5 +21,5 @@ data class Game(@PrimaryKey(autoGenerate = true)
         return "$name - $genre ($size GB)"
     }
 
-    fun getSizeasString() = "$size GB"
+    fun getSizeAsString() = "$size GB"
 }

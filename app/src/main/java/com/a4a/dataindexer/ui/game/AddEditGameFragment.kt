@@ -15,7 +15,9 @@ import kotlinx.android.synthetic.main.fragment_add_game.view.*
 import kotlinx.android.synthetic.main.fragment_add_game.*
 
 
-class AddGameFragment : Fragment() {
+class AddEditGameFragment : Fragment() {
+    var editGame: Game? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,14 +28,22 @@ class AddGameFragment : Fragment() {
         view.button_save_game.setOnClickListener { saveGame() }
         view.button_cancel_game.setOnClickListener { cancelGame() }
 
+        if (editGame != null) {
+            view.edit_text_title.setText(editGame!!.name)
+            view.edit_text_genre.setText(editGame!!.genre)
+            view.edit_text_size.setText(editGame!!.size.toString())
+        }
+
         return view
-        //initialize UI
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close)
-        (activity as AppCompatActivity).title = "Add Game"
+        if (editGame == null)
+            (activity as AppCompatActivity).title = "Add Game"
+        else
+            (activity as AppCompatActivity).title = "Edit Game"
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -53,15 +63,20 @@ class AddGameFragment : Fragment() {
         }
     }
 
+    fun setFields(game: Game) {
+        editGame = game
+    }
+
     private fun saveGame() {
         val title: String = edit_text_title.text.toString()
         var genre: String = edit_text_genre.text.toString()
-        val size: Double = edit_text_size.text.toString().toDouble()
+        var size: String = edit_text_size.text.toString()
         if (title.trim().isEmpty()) {
             Toast.makeText(activity, "Please insert a title!", Toast.LENGTH_SHORT).show()
             return
         }
-        if (genre.trim().isEmpty()) genre = "other"
+        if (genre.trim().isEmpty()) genre = "Other"
+        if (size.trim().isEmpty()) size = "0.0"
 
         // Get the GameViewModelFactory with all of it's dependencies constructed
         val factory = InjectorUtils.provideGameViewModelFactory(activity as Context)
@@ -69,8 +84,13 @@ class AddGameFragment : Fragment() {
         val viewModel = ViewModelProviders.of(this, factory)
             .get(GameViewModel::class.java)
 
-        val game: Game = Game(name = title, genre = genre, size = size, rate = 0.0)
-        viewModel.insert(game)
+        if (editGame == null) {
+            val game = Game(name = title, genre = genre, size = size.toDouble(), rate = 0.0)
+            viewModel.insert(game)
+        } else {
+            val game = Game(id = editGame!!.id, name = title, genre = genre, size = size.toDouble(), rate = 0.0)
+            viewModel.update(game)
+        }
 
         cancelGame()
     }
