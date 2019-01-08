@@ -14,5 +14,7 @@ data class Disk(@PrimaryKey(autoGenerate = true)
                 @ColumnInfo(name = "disk_size")
                 val size: Double,
                 @ColumnInfo(name = "disk_desc")
-                val rate: String) {
+                val desc: String) {
+    var gamesSizeOnDisk: Double = 0.0
+    fun getSizeAsString() = "$size GB"
 }

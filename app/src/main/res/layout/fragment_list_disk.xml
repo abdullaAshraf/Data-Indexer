@@ -11,7 +11,7 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/game_item"
+            tools:listitem="@layout/disk_item"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
@@ -19,7 +19,7 @@
             android:layout_marginStart="8dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/button_add_game"
+            android:id="@+id/button_add_disk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_add"

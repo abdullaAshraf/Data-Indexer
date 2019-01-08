@@ -11,9 +11,11 @@ class GameViewModel(private val mainRepository: MainRepository)
 
     fun getGame(id: Long) = mainRepository.getGame(id)
 
-    fun insert(game: Game) = mainRepository.insert(game)
+    fun insert(game: Game) = mainRepository.insertGame(game)
 
-    fun update(game: Game) = mainRepository.update(game)
+    fun update(game: Game) = mainRepository.updateGame(game)
 
-    fun delete(game: Game) = mainRepository.delete(game)
+    fun delete(game: Game) = mainRepository.deleteGame(game)
+
+    fun getDisks() = mainRepository.getAllDisks()
 }

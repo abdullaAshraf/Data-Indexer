@@ -78,13 +78,13 @@
                     android:inputType="date"
                     android:autofillHints="date" tools:targetApi="o"/>
 
-            <EditText
+            <Spinner
                     android:id="@+id/edit_text_disk"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/disk_number"
+                    android:hint="@string/disk_name"
                     android:inputType="numberDecimal"
-                    android:autofillHints="number" tools:targetApi="o"/>
+                    android:autofillHints="disk" tools:targetApi="o"/>
 
         </LinearLayout>
 

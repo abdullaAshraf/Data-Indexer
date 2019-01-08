@@ -7,10 +7,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.a4a.dataindexer.utilities.Converters
 
-@Database(entities = [Game::class], version = 3, exportSchema = false)
+@Database(entities = [Game::class , Disk::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract  class DataIndexerDatabase: RoomDatabase() {
     abstract fun gameDao(): GameDao
+    abstract fun diskDao(): DiskDao
 
     companion object {
         @Volatile private var instance: DataIndexerDatabase? = null
