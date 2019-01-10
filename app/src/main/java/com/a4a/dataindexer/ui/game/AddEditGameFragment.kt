@@ -8,6 +8,9 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -17,10 +20,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.transaction
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.a4a.dataindexer.R
 import com.a4a.dataindexer.data.Game
+import com.a4a.dataindexer.data.GameAPI
+import com.a4a.dataindexer.data.GameWrapper
+import com.a4a.dataindexer.utilities.GlideApp
 import com.a4a.dataindexer.utilities.InjectorUtils
+import com.android.volley.Response
+import com.bumptech.glide.load.model.GlideUrl
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.fragment_add_game.*
@@ -30,8 +41,6 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import androidx.lifecycle.Observer
-
 
 class AddEditGameFragment : Fragment() {
     private val format = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
@@ -41,6 +50,7 @@ class AddEditGameFragment : Fragment() {
     private var userItems = ArrayList<Int>(0)
     private lateinit var viewModel: GameViewModel
     private var disksIds = ArrayList<Long>(0)
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +69,82 @@ class AddEditGameFragment : Fragment() {
         viewModel = ViewModelProviders.of(this, factory)
             .get(GameViewModel::class.java)
 
+        /*
+           val presenter = SimplePresenter(context!!,this)
+           val policy = SimplePolicy ()
+           val callback = SimpleCallBack()
+
+           Autocomplete.on<String>(view.edit_text_title)
+               .with(callback)
+               .with(policy)
+               .with(presenter)
+               .build()
+        */
+
+
+        view.edit_text_title.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(query: Editable?) {
+                if (query.isNullOrEmpty() or (query!!.length < 3))
+                    return
+                viewModel.searchByName(query.toString(), Response.Listener { response ->
+                    Log.d("MyTag", "Response is: $response")
+                    val turnsType = object : TypeToken<List<GameWrapper>>() {}.type
+                    val gamesWrappers = Gson().fromJson<List<GameWrapper>>(response, turnsType)
+                    var titlesList = ArrayList<String>(0)
+                    for (gamew in gamesWrappers) {
+                        Log.d("MyTag", "name is: " + gamew.game.name)
+                        titlesList.add(gamew.game.name)
+                    }
+                    val titleAdapter = ArrayAdapter<String>(context!!, android.R.layout.simple_spinner_item, titlesList)
+                    view.edit_text_title.setAdapter(titleAdapter)
+                    view.edit_text_title.showDropDown()
+                })
+
+            }
+
+            override fun beforeTextChanged(query: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(query: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+        })
+
+        view.edit_text_title.setOnItemClickListener { adapterView, _, i, l ->
+            val selected = adapterView.getItemAtPosition(i) as String
+            viewModel.getByName(selected, Response.Listener { response ->
+                val turnsType = object : TypeToken<List<GameAPI>>() {}.type
+                val gamesArr = Gson().fromJson<List<GameAPI>>(response, turnsType)
+                val game = gamesArr[0]
+                view.edit_text_desc.setText(game.desc)
+                view.edit_text_date.setText(game.getDateAsString())
+                view.edit_text_genre.text = game.getGenreAsString()
+                for (item in game.genre) {
+                    val pos = listItems.indexOf(GameAPI.map[item])
+                    checkedItems[pos] = true
+                    userItems.add(pos)
+                }
+                view.edit_text_rate.setText(game.rate.toString())
+                Log.d("MyTag", "cover id is: " + game.cover)
+                if (game.cover > 0)
+                    viewModel.getCover(game.cover, Response.Listener { response ->
+                        Log.d("MyTag", "Response is: $response")
+                        val turnsType = object : TypeToken<List<HashMap<String, String>>>() {}.type
+                        val asMap = Gson().fromJson<List<HashMap<String, String>>>(response, turnsType)[0]
+                        asMap["url"] = asMap["url"]!!.replace("t_thumb", "t_cover_big")
+                        Log.d("MyTag", "url is: " + asMap["url"])
+                        val glideUrl = GlideUrl("https:" + asMap["url"])
+                        GlideApp.with(this)
+                            .load(glideUrl)
+                            .placeholder(R.drawable.no_cover)
+                            .error(R.drawable.no_cover)
+                            .fitCenter()
+                            .into(view.add_game_cover)
+                    })
+
+            })
+        }
+
 
         view.button_save_game.setOnClickListener { saveGame() }
         view.button_cancel_game.setOnClickListener { cancelGame() }
@@ -66,17 +152,17 @@ class AddEditGameFragment : Fragment() {
 
         view.add_game_cover.setOnClickListener { pickImage() }
 
-        val adapter: ArrayAdapter<CharSequence> = ArrayAdapter(context,android.R.layout.simple_spinner_item)
+        val adapter: ArrayAdapter<CharSequence> = ArrayAdapter(context, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         viewModel.getDisks().observe(this, Observer { disks ->
             adapter.clear()
-            var diskNames= ArrayList<String>(0)
+            var diskNames = ArrayList<String>(0)
 
             //set default option
             diskNames.add("Wish List")
             disksIds.add(0)
 
-            for (disk in disks){
+            for (disk in disks) {
                 diskNames.add(disk.name)
                 disksIds.add(disk.id)
             }
@@ -95,7 +181,7 @@ class AddEditGameFragment : Fragment() {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             )
-            datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis())
+            datePickerDialog.datePicker.minDate = System.currentTimeMillis()
             datePickerDialog.show()
         }
 
@@ -137,6 +223,8 @@ class AddEditGameFragment : Fragment() {
             mDialog.show()
         }
 
+        view.edit_size_unit.setSelection(1)
+
         if (editGame != null) {
             view.edit_text_title.setText(editGame!!.name)
             view.edit_text_desc.setText(editGame!!.desc)
@@ -155,6 +243,7 @@ class AddEditGameFragment : Fragment() {
 
         return view
     }
+
 
     //PICK IMAGE METHOD
     private fun pickImage() {
@@ -206,7 +295,7 @@ class AddEditGameFragment : Fragment() {
     private fun saveGame() {
         val title: String = edit_text_title.text.toString()
         var desc: String = edit_text_desc.text.toString()
-        var size: String = edit_text_size.text.toString()
+        var sizes: String = edit_text_size.text.toString()
         var rate: String = edit_text_rate.text.toString()
         var disk: Long = disksIds[edit_text_disk.selectedItemPosition]
         val date: String = edit_text_date.text.toString()
@@ -215,8 +304,15 @@ class AddEditGameFragment : Fragment() {
             return
         }
         if (desc.trim().isEmpty()) desc = "None"
-        if (size.trim().isEmpty()) size = "0.0"
+        if (sizes.trim().isEmpty()) sizes = "0.0"
         if (rate.trim().isEmpty()) rate = "0"
+
+
+        var size = sizes.toDouble()
+        if(edit_size_unit.selectedItemPosition == 0)
+            size /= 1024
+        if(edit_size_unit.selectedItemPosition == 2)
+            size *= 1024
 
         val genres: ArrayList<String> = ArrayList(0)
         for (item in userItems)
@@ -228,11 +324,11 @@ class AddEditGameFragment : Fragment() {
             val game = Game(
                 name = title,
                 genre = genres,
-                size = size.toDouble(),
+                size = size,
                 rate = rate.toDouble(),
                 cover = imageToByteArray(add_game_cover),
                 date = day,
-                disk = disk.toLong(),
+                disk = disk,
                 desc = desc
             )
             viewModel.insert(game)
@@ -241,11 +337,11 @@ class AddEditGameFragment : Fragment() {
                 id = editGame!!.id,
                 name = title,
                 genre = genres,
-                size = size.toDouble(),
+                size = size,
                 rate = rate.toDouble(),
                 cover = imageToByteArray(add_game_cover),
                 date = day,
-                disk = disk.toLong(),
+                disk = disk,
                 desc = desc
             )
             viewModel.update(game)
@@ -257,7 +353,7 @@ class AddEditGameFragment : Fragment() {
     private fun cancelGame() {
         val inputManager = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
-            activity!!.currentFocus.windowToken,
+            activity?.currentFocus?.windowToken,
             InputMethodManager.HIDE_NOT_ALWAYS
         )
         activity!!.supportFragmentManager.transaction {
@@ -267,7 +363,7 @@ class AddEditGameFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         //RESULT FROM CROPING ACTIVITY
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        if ((requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) and (CropImage.getActivityResult(data) != null)) {
             val result: CropImage.ActivityResult = CropImage.getActivityResult(data)
             if (resultCode == Activity.RESULT_OK) {
                 try {

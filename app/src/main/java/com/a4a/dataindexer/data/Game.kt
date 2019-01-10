@@ -3,8 +3,11 @@ package com.a4a.dataindexer.data
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.io.ByteArrayInputStream
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +37,15 @@ data class Game(@PrimaryKey(autoGenerate = true)
         return "$name - $genre ($size GB)"
     }
 
-    fun getSizeAsString() = "$size GB"
+    fun getSizeAsString(): String{
+        val df = DecimalFormat("#.###")
+        return when {
+            size < 1 -> df.format(size*1024) + " MB"
+            size > 500 -> df.format(size/1024) + " TB"
+            else -> df.format(size) + " GB"
+        }
+    }
+
     fun getDateAsString():String{
         val form = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
         return form.format(date)

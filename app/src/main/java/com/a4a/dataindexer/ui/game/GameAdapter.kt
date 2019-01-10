@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.a4a.dataindexer.R
 import com.a4a.dataindexer.data.Game
 import kotlinx.android.synthetic.main.game_item.view.*
+import kotlin.math.roundToInt
 
 class GameAdapter : ListAdapter<Game, GameAdapter.ViewHolder>(DiffCallback()) {
     lateinit var listener: OnItemClickListener
@@ -37,7 +38,7 @@ class GameAdapter : ListAdapter<Game, GameAdapter.ViewHolder>(DiffCallback()) {
             itemView.text_view_genre.text = game.getGenreAsString()
             itemView.text_view_size.text = game.getSizeAsString()
             itemView.progressBar.progress = game.rate.toInt()
-            var rate = game.rate.toString()
+            var rate = game.rate.roundToInt().toString()
             rate += "%"
             itemView.txtProgress.text = rate
             itemView.text_view_date.text = game.getDateAsString()

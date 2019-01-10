@@ -32,6 +32,14 @@
     <string name="drawer_item_program">Programs</string>
     <string name="drawer_item_other">Other</string>
     <string name="drawer_item_disk">Disks</string>
+    <string name="size">size</string>
+    <string name="unit">Unit</string>
+
+    <string-array name="size_unit">
+        <item>MB</item>
+        <item>GB</item>
+        <item>TB</item>
+    </string-array>
 
     <string-array name="genre_item">
         <item>Adventure</item>
